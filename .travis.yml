@@ -18,9 +18,10 @@ script: npm run build
 before_deploy:
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - docker build -t qiansy/lisence:latest .
-- docker tag qiansy/lisence:latest qiansy/SetLisence:master
+- docker tag qiansy/lisence:latest qiansy/lisence:latest
 - git tag "$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)"
 deploy:
+  - provider: script
     script: bash ./build/docker_push.sh master
     on:
       branch:
