@@ -145,14 +145,14 @@ export default {
     confirm () {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          const { ipAddress, macAddress, ...other } = this.form
-          const req = {
+          const { ipAddress, macAddress, expiryTime, ...other } = this.form
+          const licenseCheckModel = {
             ...other,
             ipAddress: ipAddress.map(ip => ip.value),
             macAddress: macAddress.map(ip => ip.value)
           }
           this.btnLoading = true
-          createLisence(req)
+          createLisence({ expiryTime, licenseCheckModel })
             .then(res => {
               const { data } = res.data
               this.downLoad(data.downLoadUrl)
