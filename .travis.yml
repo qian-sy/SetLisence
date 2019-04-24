@@ -1,27 +1,28 @@
 sudo: required
 language: node_js
 node_js:
-  - "8"
+- '8'
 notifications:
   email: false
 services:
-  - docker
+- docker
 cache:
   yarn: true
   directories:
-    - node_modules
+  - node_modules
 branches:
   only:
   - master
 install: yarn
 script: npm run build
 before_deploy:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker build -t qiansy/lisence:dev-latest .
-  - docker tag qiansy/lisence:dev-latest qiansy/lisence:latest
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+- docker build -t qiansy/lisence:dev-latest .
+- docker tag qiansy/lisence:dev-latest qiansy/lisence:master
+- git tag "$(date +'%Y%m%d%H%M%S')-$(git log --format=%h -1)"
 deploy:
   - provider: script
     script: bash ./build/docker_push.sh master
     on:
-      branch: 
+      branch:
         - master
