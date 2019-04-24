@@ -140,7 +140,7 @@ export default {
         this.$message.error('下载地址不存在！')
         return
       }
-      window.open(url)
+      window.open(url, '_self')
     },
     confirm () {
       this.$refs.ruleForm.validate(valid => {
@@ -155,7 +155,7 @@ export default {
           createLisence(req)
             .then(res => {
               const { data } = res.data
-              this.downLoad(data)
+              this.downLoad(data.downLoadUrl)
             })
             .catch(error => {
               this.$message.error(error)
