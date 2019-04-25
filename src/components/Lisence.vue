@@ -2,48 +2,70 @@
   <section>
     <h3>许可协议</h3>
     <div class="formContent">
-      <h1 class="logoFont">WIIST<span style="color: #84c225">ONE</span></h1>
-      <el-form label-width="100px" :model="form" style="margin-right: 20px;" size="medium" :rules="rules"
+      <h1 class="logoFont">WHST<span style="color: #84c225">ONE</span></h1>
+      <el-form label-width="120px" :model="form" style="margin-right: 20px;" size="medium" :rules="rules"
                ref="ruleForm">
         <el-form-item label="过期时间"
                       prop="expiryTime">
           <el-date-picker v-model="form.expiryTime"
-                          format="yyyy-MM-dd HH:mm:ss"
-                          value-format="yyyy-MM-dd HH:mm:ss"
                           type="datetime"
                           placeholder="请选择过期时间"
                           style="width: 100%"></el-date-picker>
         </el-form-item>
-        <el-row v-for="(address, index) in form.ipAddress"
-                :key="address.key">
-          <el-col :span="10">
-            <el-form-item :prop="'ipAddress.' + index + '.value'"
-                          :rules="rules.ipRules"
-                          :label="`IP地址${index+1}`">
+        <el-form-item v-for="(address, index) in form.ipAddress"
+                      :prop="'ipAddress.' + index + '.value'"
+                      :rules="{
+                        required: true,
+                        message: '请输入IP地址',
+                        trigger: 'blur'
+                      }"
+                      :key="address.key"
+                      :label="`IP地址${index+1}`">
+          <el-row>
+            <el-col :span="19">
               <el-input v-model="form.ipAddress[index].value"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10">
-            <el-form-item :prop="'macAddress.' + index + '.value'"
-                          :rules="rules.macRules"
-                          :label="`Mac地址${index+1}`">
+            </el-col>
+            <el-col :span="1">
+              <el-button type="text"
+                         style="color: red"
+                         @click.prevent="form.ipAddress.splice(index, 1)"
+                         v-show="form.ipAddress.length !== 1">X</el-button>
+            </el-col>
+            <el-col :span="4" style="float: right">
+              <el-button type="primary" icon="el-icon-plus"
+                         @click.prevent="form.ipAddress.push({value: '', key: Date.now()})"
+                         v-show="index + 1 === form.ipAddress.length"
+                         style="float: right"></el-button>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item v-for="(address, index) in form.macAddress"
+                      :prop="'macAddress.' + index + '.value'"
+                      :key="address.key"
+                      :rules="{
+                        required: true,
+                        message: '请输入MAC地址',
+                        trigger: 'blur'
+                      }"
+                      :label="`Mac地址${index+1}`">
+          <el-row>
+            <el-col :span="19">
               <el-input v-model="form.macAddress[index].value"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="1">
-            <el-button type="text"
-                      style="color: red"
-                      @click.prevent="removeBtn(index)"
-                      v-show="form.macAddress.length !== 1">X</el-button>
-          </el-col>
-          <el-col :span="3" style="float: right">
-            <el-button type="primary" icon="el-icon-plus"
-                      @click.prevent="addBtn()"
-                      v-show="index + 1 === form.macAddress.length"
-                      style="float: right"
-                      size="medium"></el-button>
-          </el-col>
-        </el-row>
+            </el-col>
+            <el-col :span="1">
+              <el-button type="text"
+                         style="color: red"
+                         @click.prevent="form.macAddress.splice(index, 1)"
+                         v-show="form.macAddress.length !== 1">X</el-button>
+            </el-col>
+            <el-col :span="4" style="float: right">
+              <el-button type="primary" icon="el-icon-plus"
+                         @click.prevent="form.macAddress.push({value: '', key: Date.now() + 1})"
+                         v-show="index + 1 === form.macAddress.length"
+                         style="float: right"></el-button>
+            </el-col>
+          </el-row>
+        </el-form-item>
         <el-form-item label="CPU序列号"
                       prop="cpuSerial">
           <el-input v-model="form.cpuSerial"></el-input>
@@ -91,24 +113,6 @@ export default {
         callback()
       }
     }
-    const ipValidate = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('请输入IP地址'))
-      } else if ((this.times(this.ipList))[value] > 1) {
-        callback(new Error('IP地址已存在'))
-      } else {
-        callback()
-      }
-    }
-    const macValidate = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('请输入MAC地址'))
-      } else if ((this.times(this.macList))[value] > 1) {
-        callback(new Error('MAC地址已存在'))
-      } else {
-        callback()
-      }
-    }
     return {
       rules: {
         expiryTime: [
@@ -126,14 +130,6 @@ export default {
           required: true,
           message: '请输入CPU序列号',
           trigger: 'blur'
-        }],
-        ipRules: [{
-          validator: ipValidate,
-          trigger: 'blur'
-        }],
-        macRules: [{
-          validator: macValidate,
-          trigger: 'blur'
         }]
       },
       btnLoading: false,
@@ -147,29 +143,7 @@ export default {
       }
     }
   },
-  computed: {
-    ipList () {
-      return this.form.ipAddress.map(v => v.value)
-    },
-    macList () {
-      return this.form.macAddress.map(mac => mac.value)
-    }
-  },
   methods: {
-    removeBtn (index) {
-      this.form.macAddress.splice(index, 1)
-      this.form.ipAddress.splice(index, 1)
-    },
-    addBtn () {
-      this.form.macAddress.push({value: '', key: Date.now()})
-      this.form.ipAddress.push({value: '', key: Date.now() + 1})
-    },
-    times (address) { // 计算address中元素出现次数
-      return address.reduce((res, c) => {
-        res[c] ? res[c]++ : res[c] = 1
-        return res
-      }, {})
-    },
     downLoad () {
       FetchDownLoadUrl(this.url)
         .then(res => {
@@ -183,7 +157,12 @@ export default {
     confirm () {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          const { expiryTime, ...licenseCheckModel } = this.form
+          const { ipAddress, macAddress, expiryTime, ...other } = this.form
+          const licenseCheckModel = {
+            ...other,
+            ipAddress: ipAddress.map(ip => ip.value),
+            macAddress: macAddress.map(ip => ip.value)
+          }
           this.btnLoading = true
           createLisence({ expiryTime, licenseCheckModel })
             .then(res => {
@@ -214,7 +193,7 @@ export default {
   min-height: 700px;
   margin: 0 auto;
   border: 1px solid #ccc;
-  padding: 20px 70px 10px 30px;
+  padding: 20px 70px 10px 0;
 }
 .logoFont {
   text-align: left;
