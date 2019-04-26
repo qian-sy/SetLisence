@@ -77,23 +77,23 @@
           <el-input v-model="form.mainBoardSerial"></el-input>
         </el-form-item>
         <el-row>
-          <el-col :span="16">
-            <el-button style="float: right"
-                       v-show="url"
-                       @click="downLoad"
-                       size="medium">下载</el-button>
-          </el-col>
-          <el-col :span="url ? 4 : 20">
+          <el-col :span="20">
             <el-button style="float: right"
                        @click="reset"
                        size="medium">重置</el-button>
           </el-col>
           <el-col :span="4">
             <el-button style="float: right"
-                   type="primary"
-                   :loading="btnLoading"
-                   @click="confirm"
-                   size="medium">确认</el-button>
+                       type="primary"
+                       v-if="downLoadBtn"
+                       @click="downLoad"
+                       size="medium">下载</el-button>
+            <el-button style="float: right"
+                       type="primary"
+                       :loading="btnLoading"
+                       @click="confirm"
+                       v-else
+                       size="medium">生成</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -114,6 +114,13 @@ export default {
       } else {
         callback()
       }
+    }
+    const baseData = {
+      expiryTime: '',
+      ipAddress: [{ value: '', key: Date.now() }],
+      macAddress: [{ value: '', key: Date.now() + 1 }],
+      cpuSerial: '',
+      mainBoardSerial: ''
     }
     return {
       rules: {
@@ -136,30 +143,14 @@ export default {
       },
       btnLoading: false,
       url: null,
-      form: {
-        expiryTime: '',
-        ipAddress: [{ value: '', key: Date.now() }],
-        macAddress: [{ value: '', key: Date.now() + 1 }],
-        cpuSerial: '',
-        mainBoardSerial: ''
-      }
+      downLoadBtn: false,
+      form: JSON.parse(JSON.stringify(baseData)),
+      baseForm: JSON.parse(JSON.stringify(baseData))
     }
   },
   methods: {
     downLoad () {
       window.open(this.url, '_self')
-      // FetchDownLoadUrl(this.url)
-      //   .then(() => {
-      //     window.open(this.url, '_self')
-      //     let eleLink = document.createElement('a')
-      //     eleLink.download = this.url
-      //     eleLink.style.display = 'none'
-      //     eleLink.href = this.url
-      //     document.body.appendChild(eleLink)
-      //   })
-      //   .catch(error => {
-      //     this.$message.error(error)
-      //   })
       // let eleLink = document.createElement('a');
       // eleLink.href = this.url;
       // eleLink.download = "file.lic";
@@ -181,7 +172,8 @@ export default {
             .then(res => {
               const { data: url } = res.data
               this.url = url
-              this.$message.success('文件生成成功')
+              this.downLoadBtn = true
+              this.$message.success('文件生成成功!')
             })
             .catch(error => {
               this.$message.error(error)
@@ -195,7 +187,9 @@ export default {
       })
     },
     reset () {
-      this.$refs.ruleForm.resetFields()
+      this.form = JSON.parse(JSON.stringify(this.baseForm))
+      this.$refs.ruleForm.clearValidate()
+      this.downLoadBtn = false
     }
   }
 }
