@@ -148,9 +148,8 @@ export default {
   methods: {
     downLoad () {
       FetchDownLoadUrl(this.url)
-        .then(res => {
-          const { data } = res.data
-          window.open(data.url, '_self')
+        .then(() => {
+          window.open(this.url, '_self')
         })
         .catch(error => {
           this.$message.error(error)
@@ -168,8 +167,8 @@ export default {
           this.btnLoading = true
           createLisence({ expiryTime, licenseCheckModel })
             .then(res => {
-              const { data } = res.data
-              this.url = data.downLoadUrl
+              const { data: url } = res.data
+              this.url = url
               this.$message.success('文件生成成功')
             })
             .catch(error => {
