@@ -10,6 +10,8 @@
           <el-date-picker v-model="form.expiryTime"
                           type="datetime"
                           placeholder="请选择过期时间"
+                          format="yyyy-MM-dd HH:mm:ss"
+                          value-format="yyyy-MM-dd HH:mm:ss"
                           style="width: 100%"></el-date-picker>
         </el-form-item>
         <el-form-item v-for="(address, index) in form.ipAddress"
