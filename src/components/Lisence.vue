@@ -101,7 +101,7 @@
   </section>
 </template>
 <script>
-import { createLisence, FetchDownLoadUrl } from '@/api/lisence'
+import { createLisence } from '@/api/lisence'
 import dayjs from 'dayjs'
 export default {
   name: 'Lisence',
@@ -147,13 +147,25 @@ export default {
   },
   methods: {
     downLoad () {
-      FetchDownLoadUrl(this.url)
-        .then(() => {
-          window.open(this.url, '_self')
-        })
-        .catch(error => {
-          this.$message.error(error)
-        })
+      window.open(this.url, '_self')
+      // FetchDownLoadUrl(this.url)
+      //   .then(() => {
+      //     window.open(this.url, '_self')
+      //     let eleLink = document.createElement('a')
+      //     eleLink.download = this.url
+      //     eleLink.style.display = 'none'
+      //     eleLink.href = this.url
+      //     document.body.appendChild(eleLink)
+      //   })
+      //   .catch(error => {
+      //     this.$message.error(error)
+      //   })
+      // let eleLink = document.createElement('a');
+      // eleLink.href = this.url;
+      // eleLink.download = "file.lic";
+      // document.body.appendChild(eleLink);
+      // eleLink.click();
+      // document.body.removeChild(eleLink);
     },
     confirm () {
       this.$refs.ruleForm.validate(valid => {
