@@ -8,7 +8,7 @@ const createLisence = data =>
   })
 
 const FetchDownLoadUrl = url =>
-  axios.get(`/api/v1/lisence/download?url=${url}`, url, {
+  axios.post('/api/v1/lisence/download', { url }, {
     headers: {
       'Content-Type': 'application/json'
     }
